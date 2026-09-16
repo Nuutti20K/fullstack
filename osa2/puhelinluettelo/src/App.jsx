@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import Notification from './components/Notification'
 
 
 const Filter = ({ value, onChange }) => {
@@ -52,6 +53,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -79,6 +81,10 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+          setMessage({ text: `Added ${returnedPerson.name}`, type: 'info'})
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
     }
   }
@@ -95,6 +101,12 @@ const App = () => {
           setPersons(persons.map(person => person.id !== id ? person : returnedPerson))
           setNewName('')
           setNewNumber('')
+        })
+        .catch(error => {
+          setMessage({text: `Information of ${updatedPerson.name} has already been removed from server`, type: 'error'})
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
     }
   }
@@ -127,6 +139,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter value={filter} onChange={handleFilterChange} />
       <AddPerson name={newName} number={newNumber} onNameChange={handleNameChange} onNumberChange={handleNumberChange} onSubmit={addPerson} />
       <Content persons={personsToShow} onDelete={deletePerson} />
