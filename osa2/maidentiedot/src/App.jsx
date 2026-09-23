@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 const baseUrl = 'https://studies.cs.helsinki.fi/restcountries/api/all'
+const api_key = import.meta.env.VITE_SOME_KEY
 
 const getAll = () => {
   const request = axios.get(baseUrl)
@@ -15,7 +16,7 @@ const Filter = ({ value, onChange }) => {
   )
 }
 
-const Content = ({ countries, onShow }) => {
+const Content = ({ countries, onShow, onLoad, weather, icon }) => {
   if (countries.length > 10) {
     return (
       <div>
@@ -28,7 +29,7 @@ const Content = ({ countries, onShow }) => {
   if (countries.length === 1) {
     return (
       <div>
-        <Country country={countries[0]} />
+        <Country country={countries[0]} onLoad={onLoad} weather={weather} icon={icon}/>
       </div>
     )
   }
@@ -44,7 +45,11 @@ const Content = ({ countries, onShow }) => {
   )
 }
 
-const Country = ({ country }) => {
+const Country = ({ country, onLoad, weather, icon }) => {
+  useEffect(() => {
+    onLoad(country.capital)
+  }, [country])
+
   return (
     <div>
       <h1>{country.name.common}</h1>
@@ -55,12 +60,18 @@ const Country = ({ country }) => {
         {Object.entries(country.languages).map(language => <li key={language[0]}>{language[1]}</li>)}
       </ul>
       <img src={country.flags.png} />
+      <h2>Weather in {country.capital}</h2>
+      {weather && <li>Temperature {weather.main.temp} Celsius</li>}
+      {weather && <img src={`https://openweathermap.org/payload/api/media/file/${weather.weather[0].icon}.png`} />}
+      {weather && <li>Wind {weather.wind.speed} m/s</li>}
     </div>
   )
 }
 
 const App = () => {
   const [countries, setCountries] = useState([])
+  const [weather, setWeather] = useState(null)
+  const [icon, setIcon] = useState(null)
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
@@ -76,17 +87,32 @@ const App = () => {
     setFilter(event.target.value)
   }
 
+  const getWeather = (name) => {
+    axios
+      .get(`http://api.openweathermap.org/geo/1.0/direct?q=${name}&appid=${api_key}`)
+      .then(response => {
+        axios
+          .get(`https://api.openweathermap.org/data/2.5/weather?lat=${response.data[0].lat}&lon=${response.data[0].lon}&units=metric&appid=${api_key}`)
+          .then(response => {
+            setWeather(response.data)
+            console.log(response.data)
+          })
+        console.log(response.data[0])
+      })
+  }
+
   const handleShow = name => {
     setFilter(name)
   }
 
   const countriesToShow = countries.filter(country => country.name.common.toLowerCase().includes(filter.toLowerCase()))
 
+
   return (
     <div>
       <h1>Countries</h1>
       <Filter value={filter} onChange={handleFilterChange} />
-      <Content countries={countriesToShow} onShow={handleShow} />
+      <Content countries={countriesToShow} onShow={handleShow} onLoad={getWeather} weather={weather} icon={icon}/>
     </div>
   )
 
