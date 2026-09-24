@@ -60,7 +60,7 @@ const Country = ({ country, onLoad, weather, icon }) => {
         {Object.entries(country.languages).map(language => <li key={language[0]}>{language[1]}</li>)}
       </ul>
       <img src={country.flags.png} />
-      <h2>Weather in {country.capital}</h2>
+      {weather && <h2>Weather in {country.capital}</h2>}
       {weather && <li>Temperature {weather.main.temp} Celsius</li>}
       {weather && <img src={`https://openweathermap.org/payload/api/media/file/${weather.weather[0].icon}.png`} />}
       {weather && <li>Wind {weather.wind.speed} m/s</li>}
