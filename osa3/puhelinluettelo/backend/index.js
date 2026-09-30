@@ -20,30 +20,30 @@ app.use(morgan((tokens, req, res) => {
   ].join(' ')
 }))
 
-let personsList = [
-  {
-    "id": "1",
-    "name": "Arto Hellas",
-    "number": "040-123456"
-  },
-  {
-    "id": "2",
-    "name": "Ada Lovelace",
-    "number": "39-44-5323523"
-  },
-  {
-    "id": "3",
-    "name": "Dan Abramov",
-    "number": "12-43-234345"
-
-  },
-  {
-    "id": "4",
-    "name": "Mary Poppendieck",
-    "number": "39-23-6423122"
-
-  }
-]
+//let personsList = [
+//  {
+//    "id": "1",
+//    "name": "Arto Hellas",
+//    "number": "040-123456"
+//  },
+//  {
+//    "id": "2",
+//    "name": "Ada Lovelace",
+//    "number": "39-44-5323523"
+//  },
+//  {
+//    "id": "3",
+//    "name": "Dan Abramov",
+//    "number": "12-43-234345"
+//
+//  },
+//  {
+//    "id": "4",
+//    "name": "Mary Poppendieck",
+//    "number": "39-23-6423122"
+//
+//  }
+//]
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
@@ -108,14 +108,14 @@ app.put('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const { name, number } = request.body
 
-  if (!name) {
-    return response.status(400).json({ 
-      error: 'name missing' 
-    })
-  }
+//  if (!name) {
+//    return response.status(400).json({ 
+//      error: 'name missing' 
+//    })
+//  }
 
 //  if (persons.find(person => person.name === body.name)) {
 //    return response.status(400).json({
@@ -123,11 +123,11 @@ app.post('/api/persons', (request, response) => {
 //    })
 //  }
 
-  if (!number) {
-    return response.status(400).json({ 
-      error: 'number missing' 
-    })
-  }
+//  if (!number) {
+//    return response.status(400).json({ 
+//      error: 'number missing' 
+//    })
+//  }
 
   const person = new Person({
     name: String(name),
@@ -137,6 +137,7 @@ app.post('/api/persons', (request, response) => {
   person.save().then(savedPerson => {
     response.json(savedPerson)
   })
+  .catch(error => next(error))
 })
 
 const unknownEndpoint = (request, response) => {
@@ -148,6 +149,8 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
 
   next(error)
@@ -159,4 +162,5 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
+
 
