@@ -1,0 +1,24 @@
+{
+  "name": "blogilista",
+  "version": "1.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "Nuutti",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "NODE_ENV=production node index.js",
+    "dev": "NODE_ENV=development node --watch index.js",
+    "test": "NODE_ENV=test node --test"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^18.0.6",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.11.0"
+  },
+  "devDependencies": {
+    "supertest": "^7.3.1"
+  }
+}
