@@ -83,7 +83,8 @@ const App = () => {
   const createBlog = async (blogObject) => {
     try {
       const blog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(blog))
+      const formatedBlog = { ...blog, user: {username: user.username, name: user.name, id: blog.user} }
+      setBlogs(blogs.concat(formatedBlog))
       setMessage({ text: `a new blog ${blog.title} by ${blog.author} added`, type: 'info' })
       setTimeout(() => {
         setMessage(null)
@@ -97,7 +98,6 @@ const App = () => {
     const oldBlog = blogs.find(blog => blog.id === id)
     const newLikes = oldBlog.likes + 1
     const updatedBlog = { ...oldBlog, likes: newLikes }
-    console.log(user)
     try {
       await blogService.update(id, updatedBlog)
       setBlogs(blogs.map(blog => blog.id !== id ? blog : updatedBlog).sort((a, b) => b.likes - a.likes))

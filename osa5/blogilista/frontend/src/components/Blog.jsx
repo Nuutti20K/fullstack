@@ -16,7 +16,7 @@ const Blog = ({ blog, onLike, onRemove, username }) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle} >
       {!visibleDetails && (
         <div>
           {blog.title} {blog.author}
