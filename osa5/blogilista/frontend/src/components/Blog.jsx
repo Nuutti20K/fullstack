@@ -1,51 +1,62 @@
-import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Card, CardContent, Typography, Button, Link } from '@mui/material'
 
-const Blog = ({ blog, onLike, onRemove, username }) => {
-  const [visibleDetails, setVisibleDetails] = useState(false)
+const Blog = ({ blog, onLike, onRemove, user }) => {
+  const navigate = useNavigate()
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
+  const handleRemove = async () => {
+    onRemove(blog.id)
+    navigate('/')
   }
 
-  const toggleVisibility = () => {
-    setVisibleDetails(!visibleDetails)
+  if(!blog) {
+    return null
   }
 
   return (
-    <div className='blog' style={blogStyle} >
-      {!visibleDetails && (
-        <div>
-          {blog.title} {blog.author}
-          <button onClick={() => toggleVisibility()}>view</button>
-        </div>
-      )}
-      {visibleDetails && (
-        <div>
-          <div>
-            {blog.title} {blog.author}
-            <button onClick={() => toggleVisibility()}>hide</button>
-          </div>
-          <div>
-            {blog.url}
-          </div>
-          <div>
-            likes {blog.likes}
-            <button onClick ={() => onLike(blog.id)}>like</button>
-          </div>
-          <div>
-            {blog.user.name}
-          </div>
-          {username === blog.user.username && (
-            <button onClick ={() => onRemove(blog.id)}>remove</button>
-          )}
-        </div>
-      )}
-    </div>
+    <Card>
+      <CardContent>
+        <Typography variant="h4" fontWeight="bold">
+          {blog.title}
+        </Typography>
+
+        <Typography variant="subtitle1" color="text.secondary" mb={2}>
+          By {blog.author}
+        </Typography>
+        <Link href={blog.url}>
+          {blog.url}
+        </Link>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          mt={2}
+        >
+          Added by {blog.user.name}
+        </Typography>
+        <Typography>
+        likes {blog.likes}
+        </Typography>
+        {user && (
+          <Button
+            variant="contained"
+            onClick={() => onLike(blog.id)}
+          >
+            Like
+          </Button>
+        )}
+        {user && user.username === blog.user.username && (
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleRemove}
+          >
+            Remove
+          </Button>
+        )}
+      </CardContent>
+    </Card>
   )
+
 }
 
 export default Blog
